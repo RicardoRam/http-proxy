@@ -22,13 +22,13 @@ def _proxy(path):
   :rtype: string
   """
   allHeaders = dict(flask.request.headers)
-  args = dict(flask.request.args)
   parsed_uri = urlparse(path)
   host = parsed_uri.netloc
   allHeaders['Host'] = host
 
   if flask.request.method == 'GET':
-    r = requests.get(path, headers=allHeaders, params = args)
+    args = dict(flask.request.args)
+    r = requests.get(path, headers=allHeaders, params=args)
     if r.ok:
       return Response(response=r.content, mimetype=r.headers['content-type'])
   elif flask.request.method == 'POST':
