@@ -30,12 +30,12 @@ def _proxy(path):
     args = dict(flask.request.args)
     r = requests.get(path, headers=allHeaders, params=args)
     if r.ok:
-      return Response(response=r.content, mimetype=r.headers['content-type'])
+      return Response(response=r.content, mimetype=r.headers['Content-Type'])
   elif flask.request.method == 'POST':
-    payload = flask.request.form
+    payload = dict(flask.request.form)
     r = requests.post(path, data=payload, headers=allHeaders)
     if r.ok:
-      return Response(response=r.content, mimetype=r.headers['content-type'])
+      return Response(response=r.content, mimetype=r.headers['Content-Type'])
   return ""
 
 if __name__ == '__main__':
