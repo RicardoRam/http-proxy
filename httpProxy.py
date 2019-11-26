@@ -1,5 +1,7 @@
 import flask
+from flask import Response
 import requests
+from urllib.parse import urlparse
 
 app = flask.Flask(__name__)
 
@@ -19,17 +21,21 @@ def _proxy(path):
   :return: a modified response depending on the type of request
   :rtype: string
   """
-  agent = {'User-Agent': flask.request.headers.get('User-Agent')}
+  allHeaders = dict(flask.request.headers)
+  args = dict(flask.request.args)
+  parsed_uri = urlparse(path)
+  host = parsed_uri.netloc
+  allHeaders['Host'] = host
 
   if flask.request.method == 'GET':
-    r = requests.get(path, headers=agent)
+    r = requests.get(path, headers=allHeaders, params = args)
     if r.ok:
-      return r.text
+      return Response(response=r.content, mimetype=r.headers['content-type'])
   elif flask.request.method == 'POST':
     payload = flask.request.form
-    r = requests.post(path, data=payload, headers=agent)
+    r = requests.post(path, data=payload, headers=allHeaders)
     if r.ok:
-      return r.text
+      return Response(response=r.content, mimetype=r.headers['content-type'])
   return ""
 
 if __name__ == '__main__':
